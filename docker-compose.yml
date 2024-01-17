@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  web:
+    image: geoleave-app
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8000:8000"
+    secrets:
+      - secret_name
+    networks:
+      - app-network
+
+secrets:
+  secret_name:
+    external: true
+
+networks:
+  app-network:
+    driver: overlay
+

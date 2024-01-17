@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+summarydictionary['all_leave_application_list'] = all_leave_applications
+summarydictionary['all_approved_leave_applications'] = all_approved_leave_applications
+summarydictionary['all_rejected_leave_applications'] = all_rejected_leave_applications
+summarydictionary['all_forwarded_leave_applications'] = all_forwarded_leave_applications
+
+summarydictionary['all_leave_application_list'] = len(all_leave_applications)
+summarydictionary['all_approved_leave_applications'] = len(all_approved_leave_applications)
+summarydictionary['all_rejected_leave_applications'] = len(all_rejected_leave_applications)
+summarydictionary['all_forwarded_leave_applications'] = len(all_forwarded_leave_applications)
+
+summarydictionary['normal_leave_days_available'] = normal_leave_days_available
+summarydictionary['days_on_leave'] = consumed_days
+summarydictionary['legth_of_service'] = length_of_service_in_months
+
+
+departments.append({
+"department_name" : department_name,
+"department_leave_application_list" : department_leave_application_list,
+"number_of_leave_applications_in_department" : number_of_leave_applications_in_department,
+})
+
+{% block body %}
+
+    {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+            <div class="row">
+
+                {% for department in summary.departments %}
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card mb-4 text-white bg-primary">
+                            <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fs-4 fw-semibold">{{ summary.number_of_leave_appliations }} </div>
+                                    <div> {{ department.department_name }}</div>
+                                    <p> {{ department.number_of_leave_applications_in_department }} Applications</p>
+
+                                </div>
+                            </div>
+                            <div class="c-chart-wrapper mt-3 mx-3" style="height:20px;">
+                                <canvas class="chart" id="card-chart1" height="20"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            {{ summary.all_forwarded_leave_applications|length }} FORWARDED APPLICATION (S) - AWAITING
+                            ACTION
+                        </div>
+
+                        <div class="card-body">
+                            <div  style="height: 100%">
+                                <table class="table border mb-0">
+
+                                    <thead class="table-light fw-semibold">
+                                    <tr class="align-middle">
+                                        <th>Application Date</th>
+                                        <th>User</th>
+                                        <th>Duration</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                        <th>Select Action</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    {% for value in summary.all_forwarded_leave_applications %}
+
+                                        <tr class="align-middle">
+
+                                            <td>
+                                                <div>{{ value.dateofcreation }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.appuser.first_name }} {{ value.appuser.last_name }}
+                                                    - {{ value.appuser.department.name }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.duration_in_days }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.expected_start_date }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.expected_end_date }}</div>
+                                            </td>
+
+                                            <td>
+                                                {% if not value.is_actedon %}
+                                                    <div>PENDING</div>
+
+                                                {% elif value.is_cleared %}
+                                                    <div style="color: green">CLEARED</div>
+
+                                                {% else %}
+                                                    {% if value.is_forwarded %}
+                                                        <div>FORWARDED</div>
+                                                    {% elif value.is_approved %}
+                                                        <div style="color: green">APPROVED</div>
+                                                    {% elif not value.is_approved %}
+                                                        <div style="color: red">REJECTED</div>
+                                                    {% else %}
+                                                        <div>PENDING</div>
+                                                    {% endif %}
+
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-primary dropdown-toggle" type="button"
+                                                            data-coreui-toggle="dropdown" aria-expanded="false">Primary
+                                                    </button>
+
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item"
+                                                               href="{% url 'rejectApplication' value.id %}">Reject</a>
+                                                        </li>
+                                                        <li><a class="dropdown-item"
+                                                               href="{% url 'approveApplication' value.id %}">Approve</a>
+                                                        </li>
+                                                         <li><a class="dropdown-item"
+                                                               href="{% url 'viewdocuments' value.id %}">Extras</a>
+                                                        </li>
+                                                    </ul>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+            </div>
+            <!-- /.row-->
+
+
+            <br>
+            {% for value in summary.departments %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                {{ value.number_of_leave_applications_in_department }} {{ value.department_name }} Leave
+                                Applications
+                            </div>
+
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table border mb-0">
+
+                                        <thead class="table-light fw-semibold">
+                                        <tr class="align-middle">
+                                            <th>Application Date</th>
+                                            <th>User</th>
+                                            <th>Duration</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        {% for leave in value.department_leave_application_list %}
+
+                                            <tr class="align-middle">
+
+                                                <td>
+                                                    <div>{{ leave.dateofcreation }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ leave.appuser.first_name }} {{ leave.appuser.last_name }}
+                                                        - {{ leave.appuser.department.name }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ leave.duration_in_days }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ leave.expected_start_date }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ leave.expected_end_date }}</div>
+                                                </td>
+
+                                                <td>
+                                                    {% if leave.is_forwarded %}
+                                                        <div>Forwarded</div>
+                                                    {% elif leave.is_approved %}
+                                                        <div>Approved</div>
+                                                    {% elif not leave.is_approved %}
+                                                        <div>Rejected</div>
+                                                    {% else %}
+                                                        <div>Pending</div>
+                                                    {% endif %}
+                                                </td>
+
+                                            </tr>
+
+                                        {% endfor %}
+
+
+                                        </tbody>
+
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.col-->
+                </div>
+
+            {% endfor %}
+
+
+        </div>
+    </div>
+
+{% endblock %}

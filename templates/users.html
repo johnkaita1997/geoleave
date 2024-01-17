@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block body %}
+
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+            <!-- /.row-->
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title mb-0"> {{ summary.user_list|length }} GeoPro Users</h4><br>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    Users
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table border mb-0">
+
+                                            <thead class="table-light fw-semibold">
+                                            <tr class="align-middle">
+                                                <th>Name</th>
+                                                <th>Department</th>
+                                                <th>Phone</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                            {% for value in summary.user_list %}
+
+                                                {% if not value.is_superuser %}
+
+                                                    <tr class="align-middle">
+
+                                                        <td>
+                                                            <div>{{ value.first_name }} {{ value.last_name }}</div>
+                                                        </td>
+
+                                                        <td>
+                                                            <div>{{ value.department.name }}</div>
+                                                        </td>
+
+                                                        <td>
+                                                            <div>{{ value.phone }}</div>
+                                                        </td>
+
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <a href="{% url 'userLeaves' value.id %}">
+                                                                    <button class="btn btn-primary  department_list                             "
+                                                                            type="button" aria-expanded="false">
+                                                                        View
+                                                                    </button>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+
+                                                    </tr>
+
+                                                {% endif %}
+
+
+                                            {% endfor %}
+
+                                            </tbody>
+
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col-->
+                    </div>
+                    <!-- /.row-->
+
+
+                </div>
+
+
+                <div class="card-footer">
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

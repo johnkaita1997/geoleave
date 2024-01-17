@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block body %}
+
+    {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+
+            {% for leavetype in summary.leavetypes %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card mb-4">
+
+                            <div class="card-header">
+
+                                <h6 style="text-align: center; text-decoration: underline;">{{ leavetype.name | upper }}</h6>
+
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Application Advance</th>
+                                        <th>Duration Days</th>
+                                        <th>Employee Type</th>
+                                        <th>Paid | Unpaid</th>
+                                        <th>Min Service</th>
+                                        <th>Backup Docs</th>
+                                        <th>Cleared Normal Days</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <tr>
+                                        <td>{{ leavetype.days_in_advance }} days before</td>
+                                        <td>{{ leavetype.leave_duration_in_days }} Days</td>
+
+                                        <td>
+                                            {% if leavetype.is_full_time_employee %}
+                                                Must be fulltime
+                                            {% else %}
+                                                Any
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if leavetype.is_paid %}
+                                                Paid Leave
+                                            {% else %}
+                                                Unpaid Leave
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {{ leavetype.length_of_service_months }} Months
+                                        </td>
+
+                                        <td>
+                                            {% if leavetype.is_document_backed %}
+                                                Docs Required
+                                            {% else %}
+                                                Not a must
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            Not a must
+                                        </td>
+
+                                    </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <div class="card-body">
+                                <div style="height: 100%">
+                                    <p>{{ leavetype.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+{% endblock %}

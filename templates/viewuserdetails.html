@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+summarydictionary['number_of_leave_appliations'] = number_of_leave_appliations
+summarydictionary['normal_leave_days_available'] = normal_leave_days_available
+summarydictionary['days_on_leave'] = consumed_days
+summarydictionary['legth_of_service'] = length_of_service_in_months
+summarydictionary['leave_application_list'] = leave_applications
+
+{% block body %}
+
+    {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+            <!-- /.row-->
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title mb-0">Edit User</h4><br>
+                        </div>
+                    </div>
+
+                    <div class="c-chart-wrapper" style="height:100%;margin-top:10px;">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {{ summary.form | crispy }}
+                            <br>
+                            <button type="submit" id="submit" value="submit"
+                                    class="btn btn-primary px-4"
+                                    style="width: 100%">Update User
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-footer">
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <br>
+    <br>
+
+
+
+
+
+
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+            <div class="row">
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-primary">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">{{ summary.number_of_leave_appliations }} </div>
+                                <div>Leave Applications</div>
+                            </div>
+                        </div>
+                        <div class="c-chart-wrapper mt-3 mx-3" style="height:20px;">
+                            <canvas class="chart" id="card-chart1" height="20"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /.col-->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-info">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">{{ summary.normal_leave_days_available }}</div>
+                                <div>Available Days</div>
+                            </div>
+                        </div>
+                        <div class="c-chart-wrapper mt-3 mx-3" style="height:20px;">
+                            <canvas class="chart" id="card-chart2" height="20"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-warning">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">{{ summary.days_on_leave }}</div>
+                                <div>Consumed Days</div>
+                            </div>
+                        </div>
+                        <div class="c-chart-wrapper mt-3" style="height:20px;">
+                            <canvas class="chart" id="card-chart3" height="20"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-3">
+                    <div class="card mb-4 text-white bg-danger">
+                        <div class="card-body pb-0 d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fs-4 fw-semibold">{{ summary.legth_of_service }}</div>
+                                <div>Length of service (Months)</div>
+                            </div>
+                        </div>
+                        <div class="c-chart-wrapper mt-3 mx-3" style="height:20px;">
+                            <canvas class="chart" id="card-chart4" height="20"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header">{{ summary.user.first_name }} {{ summary.user.last_name }}
+                            Applications
+                        </div>
+                        <div style="height: 100%">
+                            <div class="table-responsive">
+                                <table class="table border mb-0">
+
+                                    <thead class="table-light fw-semibold">
+                                    <tr class="align-middle">
+                                        <th>Application Date</th>
+                                        <th>Duration</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    {% for value in summary.leave_application_list %}
+
+                                        <tr class="align-middle">
+
+                                            <td>
+                                                <div>{{ value.dateofcreation }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.duration_in_days }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.expected_start_date }}</div>
+                                            </td>
+                                            <td>
+                                                <div>{{ value.expected_end_date }}</div>
+                                            </td>
+
+                                            <td>
+
+                                                {% if not value.is_actedon %}
+                                                    <div>PENDING</div>
+
+                                                {% elif value.is_cleared %}
+                                                    <div style="color: green">CLEARED</div>
+
+                                                {% else %}
+                                                    {% if value.is_forwarded %}
+                                                        <div>FORWARDED</div>
+                                                    {% elif value.is_approved %}
+                                                        <div style="color: green">APPROVED</div>
+                                                    {% elif not value.is_approved %}
+                                                        <div style="color: red">REJECTED</div>
+                                                    {% else %}
+                                                        <div>PENDING</div>
+                                                    {% endif %}
+                                                {% endif %}
+
+                                            </td>
+
+
+                                        </tr>
+
+                                    {% endfor %}
+
+
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+            </div>
+            <!-- /.row-->
+        </div>
+    </div>
+
+{% endblock %}

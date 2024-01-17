@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+summarydictionary['number_of_leave_appliations'] = number_of_leave_appliations
+summarydictionary['normal_leave_days_available'] = normal_leave_days_available
+summarydictionary['days_on_leave'] = consumed_days
+summarydictionary['legth_of_service'] = length_of_service_in_months
+summarydictionary['leave_application_list'] = leave_applications
+
+{% block body %}
+
+    {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
+    <div class="body flex-grow-1 px-3">
+
+        <div class="container-lg">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div style="height: 100%" class="card mb-4">
+                        <div align="" class="card-header"><strong>{{ summary.user.department }} LEAVE
+                            APPLICATIONS </strong>
+                        </div>
+                        <div class="card-body">
+                            <div style="height: 100%">
+
+                                <table class="table border mb-0">
+
+                                    <thead class="table-light fw-semibold">
+                                    <tr class="align-middle">
+                                        <th>Application Date</th>
+                                        <th>Duration</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                        <th>Select Action</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                    {% for value in summary.leave_application_list %}
+
+                                        {% if not value.is_forwarded %}
+
+                                            <tr class="align-middle">
+
+                                                <td>
+                                                    <div>{{ value.dateofcreation }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ value.duration_in_days }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ value.expected_start_date }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ value.expected_end_date }}</div>
+                                                </td>
+
+                                                <td>
+                                                    {% if not value.is_actedon %}
+                                                        <div>PENDING</div>
+
+                                                    {% elif value.is_cleared %}
+                                                        <div style="color: green">CLEARED</div>
+
+                                                    {% else %}
+                                                        {% if value.is_forwarded %}
+                                                            <div>FORWARDED</div>
+                                                        {% elif value.is_approved %}
+                                                            <div style="color: green">APPROVED</div>
+                                                        {% elif not value.is_approved %}
+                                                            <div style="color: red">REJECTED</div>
+                                                        {% else %}
+                                                            <div>PENDING</div>
+                                                        {% endif %}
+
+                                                    {% endif %}
+                                                </td>
+
+
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <button class="btn btn-primary dropdown-toggle" type="button"
+                                                                data-coreui-toggle="dropdown" aria-expanded="false">
+                                                            Action
+                                                        </button>
+
+                                                        {% if not value.is_cleared %}
+                                                            <ul class="dropdown-menu">
+                                                                {% if not value.is_actedon %}
+                                                                    <li><a class="dropdown-item"
+                                                                           href="{% url 'rejectApplication' value.id %}">Reject</a>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item"
+                                                                           href="{% url 'approveApplication' value.id %}">Approve</a>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item"
+                                                                           href="{% url 'forwardApplication' value.id %}">Forward</a>
+                                                                    </li>
+
+                                                                {% else %}
+                                                                    {% if not value.is_approved %}
+                                                                        <li><a class="dropdown-item"
+                                                                               href="{% url 'approveApplication' value.id %}">Approve</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item"
+                                                                               href="{% url 'forwardApplication' value.id %}">Forward</a>
+                                                                        </li>
+
+                                                                    {% else %}
+                                                                        <li><a class="dropdown-item"
+                                                                               href="{% url 'rejectApplication' value.id %}">Reject</a>
+                                                                        </li>
+
+                                                                        <li><a class="dropdown-item"
+                                                                               href="{% url 'clear' value.id %}">Clear</a>
+                                                                        </li>
+
+                                                                    {% endif %}
+
+
+                                                                {% endif %}
+
+                                                                <li><a class="dropdown-item"
+                                                                       href="{% url 'viewdocuments' value.id %}">Extras</a>
+                                                                </li>
+                                                            </ul>
+
+                                                        {% else %}
+                                                            <ul class="dropdown-menu">
+                                                                <li><a class="dropdown-item"
+                                                                       href="{% url 'viewdocuments' value.id %}">Extras</a>
+                                                                </li>
+                                                            </ul>
+                                                        {% endif %}
+
+                                                    </div>
+
+                                                </td>
+
+                                            </tr>
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-->
+            </div>
+            <!-- /.row-->
+        </div>
+    </div>
+
+{% endblock %}

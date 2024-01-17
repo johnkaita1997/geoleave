@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+
+{% block body %}
+
+    {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
+    {% for attachment_url in attachments %}
+        <script>
+            function openAttachment() {
+                window.open("{{ attachment_url }}", "_blank");
+            }
+
+            openAttachment();
+        </script>
+    {% endfor %}
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            LEAVE DESCRIPTION
+                        </div>
+
+                        <div class="card-body">
+                            <div style="height: 100%">
+                                <p>{{ description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block body %}
+
+
+
+
+    <div class="body flex-grow-1 px-3">
+
+
+        <div class="container-lg">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+
+                        <div class="card-body">
+                            <div style="height: 100%">
+                                <table style="border-collapse: collapse; width: 100%;">
+
+                                    <thead class="table-light fw-semibold">
+                                    <tr align="center" class="align-middle">
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Name</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Description</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Advance Days</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Duration In Days</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Service In Months</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Full Time</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Document Backed</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Satisfactory Based</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Exhausted Normal Leave Days</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Duration Request Basis</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Is Compensatory</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Is Normal</th>
+                                        <th style="border: 1px solid #ddd; padding: 1px;">Select Action</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+
+
+                                    {% for value in summary.leavetypes %}
+
+                                        <tr class="align-middle">
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.name }}</div>
+                                            </td>
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.description }}</div>
+                                            </td>
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.days_in_advance }}</div>
+                                            </td>
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.leave_duration_in_days }}</div>
+                                            </td>
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.length_of_service_months }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.is_full_time_employee }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.is_document_backed }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.is_satisfactory_performance_based }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.has_exhausted_normal_leave_days }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.duration_is_request_basis }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.is_compensatory }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 1px;">
+                                                <div>{{ value.is_normal }}</div>
+                                            </td>
+
+                                            <td align="center" style="border: 1px solid #ddd; padding: 5px;">
+                                                <div class="btn-group">
+                                                    <button
+                                                            type="button"
+                                                            data-coreui-toggle="dropdown" aria-expanded="false">
+                                                        Action
+                                                    </button>
+
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item"
+                                                               href="{% url 'editleavetype' value.id %}">Edit</a>
+                                                        </li>
+                                                        <li><a class="dropdown-item"
+                                                               href="{% url 'deleteleavetype' value.id %}">Delete</a>
+                                                        </li>
+                                                    </ul>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    {% endfor %}
+
+
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <br>
+
+            <!-- /.row-->
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+                        <h4 class="card-title mb-0">Create A Leave Type</h4>
+                    </div>
+
+                    <div class="c-chart-wrapper" style="height:100%;margin-top:40px;">
+                        <form action="" enctype="multipart/form-data" method="post">
+                            {% csrf_token %}
+                            {{ summary.form | crispy }}
+
+                            <br>
+                            <button type="submit" id="submit" value="submit"
+                                    class="btn btn-primary px-4"
+                                    style="width: 100%">Submit Leave Type
+                            </button>
+                        </form>
+                    </div>
+
+
+                </div>
+
+
+                <div class="card-footer">
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+{% endblock %}

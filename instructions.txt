@@ -1,0 +1,8 @@
+pip freeze > requirements.txt
+
+
+
+Docker Installation
+https://docs.docker.com/desktop/install/windows-install/
+
+
