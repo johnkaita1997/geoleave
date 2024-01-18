@@ -486,7 +486,7 @@ def apply(request):
 
                     if leave.days_in_advance and leave.days_in_advance >= 0:
                         if application_days_in_advance < leave.days_in_advance:
-                            messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early")
+                            messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
                             return redirect('apply')
 
                     if not leave.duration_is_request_basis:
