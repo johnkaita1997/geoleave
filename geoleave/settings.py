@@ -134,24 +134,26 @@ WSGI_APPLICATION = 'geoleave.wsgi.application'
 # }
 
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'geoleave',
+        'USER': 'geoleave',
+        'PASSWORD': 'u#9XJ3)~{@D;gC?A',
+        'HOST': '192.168.214.100',
+        'PORT': '5000',
+    }
+}
+
+
+#
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'bongadb',
-#         'USER': 'geoleave',
-#         'PASSWORD': 'Login2aws',
-#         'HOST': 'database-1.c8bqhdkr5dbp.us-east-1.rds.amazonaws.com',
-#         'PORT': '5432',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / "db.sqlite3",
 #     }
 # }
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
