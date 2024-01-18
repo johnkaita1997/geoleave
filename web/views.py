@@ -80,10 +80,11 @@ def getProjectLeadSummaries(user):
 
     try:
         leave_assigned_days = Leavetype.objects.get(is_normal=True)
+        normal_leave_days_available = leave_assigned_days.leave_duration_in_days - consumed_days
     except ObjectDoesNotExist:
         leave_assigned_days = 0
+        normal_leave_days_available = 0
 
-    normal_leave_days_available = leave_assigned_days.leave_duration_in_days - consumed_days
 
     all_leave_applications = Leaveapplication.objects.filter (dateofcreation__year=current_year) or []
     all_approved_leave_applications = Leaveapplication.objects.filter (dateofcreation__year=current_year,is_approved=True) or []
