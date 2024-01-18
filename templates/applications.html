@@ -1,12 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-summarydictionary['number_of_leave_appliations'] = number_of_leave_appliations
-summarydictionary['normal_leave_days_available'] = normal_leave_days_available
-summarydictionary['days_on_leave'] = consumed_days
-summarydictionary['legth_of_service'] = length_of_service_in_months
-summarydictionary['leave_application_list'] = leave_applications
-
 {% block body %}
 
     {% if message %}
@@ -168,5 +162,9 @@ summarydictionary['leave_application_list'] = leave_applications
             <!-- /.row-->
         </div>
     </div>
+
+
+
+
 
 {% endblock %}
