@@ -188,6 +188,7 @@ class CreateLeaveTypeForm(forms.ModelForm):
             'duration_is_request_basis',
             'is_compensatory',
             'is_normal',
+            'is_paid',
             'description',
         ]
 
@@ -204,6 +205,7 @@ class CreateLeaveTypeForm(forms.ModelForm):
             'duration_is_request_basis': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_compensatory': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_normal': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
+            'is_paid': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
         }
 
 
