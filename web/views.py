@@ -805,10 +805,12 @@ def userLeavesView(request, pk):
             met_satisfactory_performance = form.cleaned_data.get('met_satisfactory_performance')
             is_fulltime = form.cleaned_data.get('is_fulltime')
             is_teamlead = form.cleaned_data.get('is_teamlead')
+            hiring_date = form.cleaned_data.get('hiring_date')
 
             user.met_satisfactory_performance = met_satisfactory_performance
             user.is_fulltime = is_fulltime
             user.is_teamlead = is_teamlead
+            user.hiring_date = hiring_date
 
             user.save()
             messages.success(request, f"User was saved successfully")
@@ -824,6 +826,7 @@ def userLeavesView(request, pk):
             'met_satisfactory_performance': user.met_satisfactory_performance,
             'is_fulltime': user.is_fulltime,
             'is_teamlead': user.is_teamlead,
+            'hiring_date': user.hiring_date,
         })
         summarydictionary['form'] = form
 

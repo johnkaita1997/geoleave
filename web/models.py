@@ -154,6 +154,7 @@ class EditAppUser(forms.ModelForm):
             'is_fulltime',
             'is_teamlead',
             'is_projectlead',
+            'hiring_date',
         ]
 
         widgets = {
@@ -164,6 +165,8 @@ class EditAppUser(forms.ModelForm):
             'is_fulltime': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_teamlead': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_projectlead': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
+            'hiring_date': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'})
         }
 
 
