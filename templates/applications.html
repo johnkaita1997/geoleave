@@ -33,6 +33,7 @@ summarydictionary['leave_application_list'] = leave_applications
                                     <thead class="table-light fw-semibold">
                                     <tr class="align-middle">
                                         <th>Application Date</th>
+                                        <th>Type</th>
                                         <th>Duration</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
@@ -53,7 +54,10 @@ summarydictionary['leave_application_list'] = leave_applications
                                                     <div>{{ value.dateofcreation }}</div>
                                                 </td>
                                                 <td>
-                                                    <div>{{ value.duration_in_days }}</div>
+                                                    <div>{{ value.leave.name }}</div>
+                                                </td>
+                                                <td>
+                                                    <div>{{ value.duration_in_days }} days</div>
                                                 </td>
                                                 <td>
                                                     <div>{{ value.expected_start_date }}</div>

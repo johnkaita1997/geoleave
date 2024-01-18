@@ -2,6 +2,12 @@
 {% load crispy_forms_tags %}
 <!DOCTYPE html>
 
+ {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
 <html lang="en">
 <head>
     <meta charset="utf-8">

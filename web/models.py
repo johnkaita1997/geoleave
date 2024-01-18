@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 from django.db import models
 from django.forms import PasswordInput
@@ -19,6 +21,8 @@ class LoginModel(models.Model):
     password = models.CharField(max_length=255)
     def __str__(self):
         return f"${self.username}-{self.password}"
+
+
 class LoginForm(forms.ModelForm):
     class Meta:
         model = LoginModel
@@ -71,9 +75,12 @@ class MultipleFileField(forms.FileField):
         return result
 
 
+from django import forms
+from datetime import date
 
 class LeaveApplicationForm(forms.ModelForm):
     accompanying_documents = MultipleFileField(required=False)
+
     class Meta:
         model = Leaveapplication
         fields = [
@@ -81,7 +88,6 @@ class LeaveApplicationForm(forms.ModelForm):
             'expected_start_date',
             'expected_end_date',
             'description',
-            # 'end_of_holiday_date',
             'accompanying_documents'
         ]
 
@@ -89,16 +95,23 @@ class LeaveApplicationForm(forms.ModelForm):
             'leave': forms.Select(attrs={'class': 'form-control', 'style': 'margin-bottom: 10px;'}),
             'duration_in_days': forms.NumberInput(attrs={'class': 'form-control', 'style': 'margin-bottom: 10px;'}),
             'expected_start_date': forms.DateInput(
-                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'}),
+                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'},
+                format='%Y-%m-%d'
+            ),
             'expected_end_date': forms.DateInput(
-                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 30px;'}),
+                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 30px;'},
+                format='%Y-%m-%d'
+            ),
             'description': forms.Textarea(
-                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 50px;', 'rows': 5}),
-            # 'start_of_holiday_date': forms.DateInput(
-            #     attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 20px;'}),
-            # 'end_of_holiday_date': forms.DateInput(
-            #     attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 50px;'}),
+                attrs={'class': 'form-control', 'style': 'margin-bottom: 50px;', 'rows': 5}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(LeaveApplicationForm, self).__init__(*args, **kwargs)
+        # Set the initial value for 'expected_start_date' and 'expected_end_date' to the current date
+        self.initial['expected_start_date'] = date.today()
+        self.initial['expected_end_date'] = date.today()
+()
 
 
 
@@ -192,4 +205,26 @@ class CreateLeaveTypeForm(forms.ModelForm):
             'is_compensatory': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_normal': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
         }
+
+
+
+class ClearDateModel(models.Model):
+    clearance_date = models.DateField()
+    def __str__(self):
+        return self.id
+
+
+class ClearDateForm(forms.ModelForm):
+    class Meta:
+        model = ClearDateModel
+        fields = [
+            'clearance_date',
+        ]
+
+        widgets = {
+            'clearance_date': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'},
+            ),
+        }
+
 

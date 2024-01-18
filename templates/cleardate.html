@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block body %}
+
+    {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+            <!-- /.row-->
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title mb-0">Select Resume Day</h4>
+                        </div>
+                    </div>
+
+                    <div class="c-chart-wrapper" style="height:100%;margin-top:40px;">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {{ summary.form | crispy }}
+
+                            <br>
+                            <button type="submit" id="submit" value="submit"
+                                    class="btn btn-primary px-4"
+                                    style="width: 100%">SUBMIT
+                            </button>
+
+
+                        </form>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="card-footer">
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

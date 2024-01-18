@@ -27,6 +27,8 @@ urlpatterns = [
     path('leaveconfiguration', webviews.leaveconfigurationView, name='leaveconfiguration'),
 
     path('clear/<leaveapplicationid>', webviews.clearView, name='clear'),
+    path('clearDateView/<leaveapplicationid>/<str:thetime>/', webviews.clearDateView, name='clearDateView'),
+
     path('viewdocuments/<leaveapplicationid>', webviews.documentsView, name='viewdocuments'),
 
 ]
