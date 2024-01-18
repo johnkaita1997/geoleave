@@ -191,10 +191,11 @@ def getuserLeaveDetails(user, department=None):
 
     try:
         leave_assigned_days = Leavetype.objects.get(is_normal=True)
+        normal_leave_days_available = leave_assigned_days.leave_duration_in_days - consumed_days
     except ObjectDoesNotExist:
         leave_assigned_days = 0
+        normal_leave_days_available = 0
 
-    normal_leave_days_available = leave_assigned_days.leave_duration_in_days - consumed_days
 
     leave_applications = Leaveapplication.objects.filter (appuser = user, dateofcreation__year=current_year) or []
     if department:
