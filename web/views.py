@@ -945,6 +945,7 @@ def leavetypesView(request):
             duration_is_request_basis = form.cleaned_data.get('duration_is_request_basis')
             is_compensatory = form.cleaned_data.get('is_compensatory')
             is_normal = form.cleaned_data.get('is_normal')
+            is_paid = form.cleaned_data.get('is_paid')
             days_in_advance = form.cleaned_data.get('days_in_advance')
 
             normal_leave_type = Leavetype.objects.get(is_normal=True)
@@ -968,6 +969,7 @@ def leavetypesView(request):
                         is_compensatory = is_compensatory,
                         is_normal = is_normal,
                         days_in_advance = days_in_advance,
+                        is_paid = is_paid,
                     )
 
                 messages.success(request, "Leave Type Created Successfully")
