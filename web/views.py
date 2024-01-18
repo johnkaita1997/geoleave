@@ -949,7 +949,7 @@ def leavetypesView(request):
             days_in_advance = form.cleaned_data.get('days_in_advance')
 
             normal_leave_type = Leavetype.objects.get(is_normal=True)
-            if normal_leave_type:
+            if normal_leave_type and is_normal:
                 messages.success(request, f"A normal leave type already exists")
                 return redirect(request.META.get('HTTP_REFERER', 'loginpage'))
 
