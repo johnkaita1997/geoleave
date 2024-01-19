@@ -250,7 +250,10 @@ class ClearDateForm(forms.ModelForm):
         }
 
 
-
+class LeaveHistoryModel(models.Model):
+    clearance_date = models.DateField()
+    def __str__(self):
+        return self.id
 
 
 class Holiday(ParentModel):

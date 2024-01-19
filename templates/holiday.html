@@ -5,7 +5,7 @@
 
 {% block body %}
 
-    {% if not summary.user.is_projectlead %}
+    {% if summary.user.is_projectlead %}
 
         <div class="body flex-grow-1 px-3">
             <div class="container-lg">
@@ -81,7 +81,7 @@
                                                 <th>Name</th>
                                                 <th>Date</th>
 
-                                                {% if not summary.user.is_projectlead %}
+                                                {% if summary.user.is_projectlead %}
                                                     <th>Action</th>
                                                 {% endif %}
                                             </tr>
@@ -101,7 +101,7 @@
                                                         <div>{{ value.date }}</div>
                                                     </td>
 
-                                                    {% if not summary.user.is_projectlead %}
+                                                    {% if summary.user.is_projectlead %}
                                                         <td>
                                                             <div class="btn-group">
                                                                 <a href="{% url 'deleteholiday' value.id %}">
