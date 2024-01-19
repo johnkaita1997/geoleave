@@ -126,28 +126,6 @@ WSGI_APPLICATION = 'geoleave.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'geoleave',
-        'USER': 'geoleave',
-        'PASSWORD': 'u#9XJ3)~{@D;gC?A',
-        'HOST': '192.168.214.100',
-        'PORT': '5000',
-    }
-}
-
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -280,3 +258,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 CSRF_TRUSTED_ORIGINS = ['https://2dbc-41-215-50-90.ngrok-free.app/']
+
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'geoleave',
+        'USER': 'geoleave',
+        'PASSWORD': 'u#9XJ3)~{@D;gC?A',
+        'HOST': '192.168.214.100',
+        'PORT': '5000',
+    }
+}
+
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / "db.sqlite3",
+#     }
+# }
