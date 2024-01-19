@@ -2,7 +2,7 @@ import os
 import smtplib
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import jwt
 from django.contrib.auth.models import Group
@@ -14,7 +14,6 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from geoleave.settings import SIMPLE_JWT
-
 
 class BaseUserModel(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
@@ -165,3 +164,4 @@ def check_if_object_exists(Model, obj_id):
         return True
     except ObjectDoesNotExist:
         return Response({'detail': f"{obj_id} is not a valid uuid"}, status=status.HTTP_400_BAD_REQUEST)
+

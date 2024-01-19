@@ -26,6 +26,9 @@ urlpatterns = [
     path('deleteleavetype/<leavetypeid>', webviews.deleteleavetypeView, name='deleteleavetype'),
     path('leaveconfiguration', webviews.leaveconfigurationView, name='leaveconfiguration'),
 
+    path('holiday', webviews.holidayView, name='holiday'),
+    path('deleteholiday/<pk>', webviews.deleteholidayView, name='deleteholiday'),
+
     path('clear/<leaveapplicationid>', webviews.clearView, name='clear'),
     path('clearDateView/<leaveapplicationid>/<str:thetime>/', webviews.clearDateView, name='clearDateView'),
 

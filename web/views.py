@@ -21,7 +21,8 @@ from leave_attachments.models import Leaveattachment
 from leave_types.models import Leavetype
 from utils import sendMail
 from web.models import FileUploadWeb, LoginForm, RegistrationForm, LeaveApplicationForm, DepartmentForm, \
-    AdminEditUserForm, EditAppUser, CreateLeaveTypeForm, ClearDateForm
+    AdminEditUserForm, EditAppUser, CreateLeaveTypeForm, ClearDateForm, HolidayForm, Holiday, \
+    calculate_duration_excluding_weekends_and_holidays
 
 
 def getProjectLeadSummaries(user):
@@ -30,8 +31,6 @@ def getProjectLeadSummaries(user):
 
     current_date = datetime.now().date()
     current_year = current_date.year
-
-    hiring_date = user.hiring_date
 
     hiring_date = user.hiring_date
     difference = relativedelta(current_date, hiring_date)
@@ -61,7 +60,7 @@ def getProjectLeadSummaries(user):
             end_date = normal_leave_object.expected_end_date
 
             if current_date > start_date:
-                consumed_days = (current_date - start_date).days + the_consumed_days
+                consumed_days = calculate_duration_excluding_weekends_and_holidays(start_date, current_date) + the_consumed_days
                 print(f"Number of days until current date: {consumed_days}")
             else:
                 consumed_days = the_consumed_days
@@ -172,7 +171,7 @@ def getuserLeaveDetails(user, department=None):
 
             if current_date > start_date:
                 print(f"Added")
-                consumed_days = (current_date - start_date).days + the_consumed_days
+                consumed_days = calculate_duration_excluding_weekends_and_holidays(start_date, current_date) + the_consumed_days
                 print(f"Number of days until current date: {consumed_days}")
             else:
                 consumed_days = the_consumed_days
@@ -399,20 +398,18 @@ def apply(request):
                 description = form.cleaned_data.get('description').strip()
 
                 files = request.FILES.getlist('accompanying_documents')
-                duration = (expected_end_date - expected_start_date).days
+                duration =calculate_duration_excluding_weekends_and_holidays(expected_start_date, expected_end_date)
 
                 with transaction.atomic():
     
                     current_date = datetime.now().date()
                     current_year = current_date.year
-    
-                    leave_request_duration_in_days = (expected_end_date - expected_start_date).days + 1
-    
+
                     normal_leave_days = 0
                     normal_leave_available_days = 0
                     if not leave.duration_is_request_basis:
                         normal_leave_days = Leavetype.objects.filter(is_normal=True).aggregate(Sum('leave_duration_in_days'))['leave_duration_in_days__sum'] or 0
-                        normal_leave_available_days = normal_leave_days - leave_request_duration_in_days
+                        normal_leave_available_days = normal_leave_days - duration
                         print(f"We got here {normal_leave_available_days}")
 
     
@@ -485,13 +482,23 @@ def apply(request):
                         print("Start date is today or in the future.")
 
                     if leave.days_in_advance and leave.days_in_advance >= 0:
-                        if application_days_in_advance < leave.days_in_advance:
-                            messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
-                            return redirect('apply')
+                        if not leave.is_normal:
+                            if application_days_in_advance < leave.days_in_advance:
+                                messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
+                                return redirect('apply')
+                        else:
+                            if duration <= 1:
+                                check_against_days = 1
+                            else:
+                                check_against_days = leave.days_in_advance
+                            if duration < check_against_days:
+                                messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
+                                return redirect('apply')
+
 
                     if not leave.duration_is_request_basis:
                         if leave.leave_duration_in_days and leave.leave_duration_in_days >0:
-                            if leave_request_duration_in_days > leave.leave_duration_in_days:
+                            if duration > leave.leave_duration_in_days:
                                 messages.error(request, f"You are only allowed {leave.leave_duration_in_days} days")
                                 return redirect('apply')
 
@@ -887,6 +894,9 @@ def editprofileView(request):
 
 
 
+
+
+
 @never_cache
 def documentsView(request, leaveapplicationid):
     try:
@@ -1153,7 +1163,7 @@ def clearDateView(request, leaveapplicationid, thetime):
         leave_application = Leaveapplication.objects.get(id=leaveapplicationid)
         leave_application.is_cleared = True
         leave_application.clearance_date = thetime
-        leave_application.duration_in_days = (thetime - leave_application.expected_start_date).days
+        leave_application.duration_in_days = calculate_duration_excluding_weekends_and_holidays(leave_application.expected_start_date, thetime)
 
         leave_application.is_approved = False
         leave_application.is_forwarded = False
@@ -1168,3 +1178,58 @@ def clearDateView(request, leaveapplicationid, thetime):
     except ObjectDoesNotExist:
         messages.success(request, f"This leave application does not exist")
         return redirect('loginpage')
+
+
+
+
+
+
+
+
+
+@never_cache
+def holidayView(request):
+    user = request.user
+    summarydictionary = getProjectLeadSummaries(user)
+    summarydictionary['user'] = user
+
+    holiday_list = Holiday.objects.all()
+    summarydictionary['holiday_list'] = holiday_list
+
+    if request.method == 'POST':
+        form = HolidayForm(data=request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('name').strip()
+            date = form.cleaned_data.get('date')
+            Holiday.objects.create(
+                name = name,
+                date = date
+            )
+            messages.success(request, f"Holiday was saved successfully")
+            return redirect('holiday')
+
+        else:
+            messages.error(request, 'Invalid Form')
+            summarydictionary['form'] = form
+            return redirect('holiday')
+
+    else:
+        form = HolidayForm()
+        summarydictionary['form'] = form
+
+    response = render(request, "holiday.html", {"summary": summarydictionary})
+    return response
+
+
+
+
+@never_cache
+def deleteholidayView(request, pk):
+    try:
+        holiday = Holiday.objects.get(id=pk)
+        holiday.delete()
+        messages.success(request, f"Holiday was deleted successfully")
+        return redirect('holiday')
+    except ObjectDoesNotExist:
+        messages.success(request, f"Holiday does not exist")
+        return redirect('holiday')

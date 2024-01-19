@@ -1,14 +1,32 @@
-from datetime import date
+from datetime import timedelta
 
 from django import forms
 from django.db import models
 from django.forms import PasswordInput
+from django.utils import timezone
 
 from appuser.models import AppUser
 from departments.models import Department
 from file_upload.models import SchoolImage
 from leave_applications.models import Leaveapplication
 from leave_types.models import Leavetype
+from models import ParentModel
+
+
+def calculate_duration_excluding_weekends_and_holidays(start_date, end_date):
+    duration = (end_date - start_date).days + 1
+    weekend_days = 0
+    holiday_dates = set(Holiday.objects.all().values_list('date', flat=True))
+
+    for single_date in (start_date + timedelta(n) for n in range(duration)):
+        if single_date.weekday() in [5, 6] or single_date in holiday_dates:
+            weekend_days += 1
+
+    duration_excluding_weekends_and_holidays = duration - weekend_days
+
+    return duration_excluding_weekends_and_holidays
+
+
 
 class FileUploadWeb(forms.ModelForm):
     class Meta:
@@ -111,7 +129,6 @@ class LeaveApplicationForm(forms.ModelForm):
         # Set the initial value for 'expected_start_date' and 'expected_end_date' to the current date
         self.initial['expected_start_date'] = date.today()
         self.initial['expected_end_date'] = date.today()
-()
 
 
 
@@ -233,3 +250,30 @@ class ClearDateForm(forms.ModelForm):
         }
 
 
+
+
+
+class Holiday(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    date = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return self.name
+
+
+
+
+class HolidayForm(forms.ModelForm):
+    class Meta:
+        model = Holiday
+        fields = [
+            'name','date',
+        ]
+
+        widgets = {
+            'name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Leave Type', 'style': 'margin-bottom: 20px;'}),
+            'date': forms.DateInput(
+                attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'},
+            ),
+        }

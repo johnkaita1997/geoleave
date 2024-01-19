@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block body %}
+
+    {% if not summary.user.is_projectlead %}
+
+        <div class="body flex-grow-1 px-3">
+            <div class="container-lg">
+                <!-- /.row-->
+                <div class="card mb-4">
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title mb-0">Geopro Holidays</h4><br>
+                            </div>
+                        </div>
+
+                        <div class="c-chart-wrapper" style="height:100%;margin-top:10px;">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                {{ summary.form | crispy }}
+
+                                <br>
+                                <button type="submit" id="submit" value="submit"
+                                        class="btn btn-primary px-4"
+                                        style="width: 100%">Save holiday
+                                </button>
+
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card-footer">
+                    </div>
+
+
+                </div>
+
+            </div>
+        </div>
+
+    {% endif %}
+
+
+
+
+    <div class="body flex-grow-1 px-3">
+        <div class="container-lg">
+            <!-- /.row-->
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title mb-0">Holidays</h4><br>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    {{ summary.all_forwarded_leave_applications|length }} HOLIDAYS
+                                </div>
+
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table border mb-0">
+
+                                            <thead class="table-light fw-semibold">
+                                            <tr class="align-middle">
+                                                <th>Name</th>
+                                                <th>Date</th>
+
+                                                {% if not summary.user.is_projectlead %}
+                                                    <th>Action</th>
+                                                {% endif %}
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                            {% for value in summary.holiday_list %}
+
+                                                <tr class="align-middle">
+
+                                                    <td>
+                                                        <div>{{ value.name }}</div>
+                                                    </td>
+
+                                                    <td>
+                                                        <div>{{ value.date }}</div>
+                                                    </td>
+
+                                                    {% if not summary.user.is_projectlead %}
+                                                        <td>
+                                                            <div class="btn-group">
+                                                                <a href="{% url 'deleteholiday' value.id %}">
+                                                                    <button class="btn btn-primary  holiday_list                             "
+                                                                            type="button" aria-expanded="false">
+                                                                        Delete
+                                                                    </button>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    {% endif %}
+
+
+                                                </tr>
+
+                                            {% endfor %}
+
+
+                                            </tbody>
+
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.col-->
+                    </div>
+                    <!-- /.row-->
+
+
+                </div>
+
+
+                <div class="card-footer">
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
