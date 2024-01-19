@@ -253,7 +253,7 @@ class ClearDateForm(forms.ModelForm):
 
 
 
-class Holiday(models.Model):
+class Holiday(ParentModel):
     name = models.CharField(max_length=255, unique=True)
     date = models.DateField(default=timezone.now)
 
