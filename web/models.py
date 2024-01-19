@@ -13,6 +13,15 @@ from leave_types.models import Leavetype
 from models import ParentModel
 
 
+
+class UppercaseInput(forms.TextInput):
+    def value_from_datadict(self, data, files, name):
+        value = super().value_from_datadict(data, files, name)
+        return value.upper() if value else value
+
+
+
+
 def calculate_duration_excluding_weekends_and_holidays(start_date, end_date):
     duration = (end_date - start_date).days + 1
     weekend_days = 0
@@ -67,9 +76,9 @@ class RegistrationForm(forms.ModelForm):
             'hiring_date': forms.DateInput(
                 attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'}),
             'department': forms.Select(attrs={'class': 'form-control', 'style': 'margin-bottom: 10px;'}),
-            'first_name': forms.TextInput(
+            'first_name': UppercaseInput(
                 attrs={'class': 'form-control', 'placeholder': 'First Name', 'style': 'margin-bottom: 10px;'}),
-            'last_name': forms.TextInput(
+            'last_name': UppercaseInput(
                 attrs={'class': 'form-control', 'placeholder': 'Last Name', 'style': 'margin-bottom: 10px;'}),
         }
 
@@ -140,6 +149,11 @@ class DepartmentForm(forms.ModelForm):
         fields = [
             'name',
         ]
+
+        widgets = {
+            'name': UppercaseInput(
+                attrs={'class': 'form-control', 'placeholder': 'Leave Type', 'style': 'margin-bottom: 20px;'}),
+        }
 
 
 class AdminEditUserForm(forms.ModelForm):
@@ -213,7 +227,7 @@ class CreateLeaveTypeForm(forms.ModelForm):
         ]
 
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Leave Type', 'style': 'margin-bottom: 10px;'}),
+            'name': UppercaseInput(attrs={'class': 'form-control', 'placeholder': 'Leave Type', 'style': 'margin-bottom: 10px;'}),
             'leave_duration_in_days':  forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number', 'style': 'margin-bottom: 10px;'}),
             'days_in_advance': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number', 'style': 'margin-bottom: 10px;'}),
             'length_of_service_months': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number', 'style': 'margin-bottom: 10px;'}),
@@ -266,6 +280,8 @@ class Holiday(ParentModel):
 
 
 
+
+
 class HolidayForm(forms.ModelForm):
     class Meta:
         model = Holiday
@@ -274,9 +290,16 @@ class HolidayForm(forms.ModelForm):
         ]
 
         widgets = {
-            'name': forms.TextInput(
+            'name': UppercaseInput(
                 attrs={'class': 'form-control', 'placeholder': 'Leave Type', 'style': 'margin-bottom: 20px;'}),
             'date': forms.DateInput(
                 attrs={'type': 'date', 'class': 'form-control', 'style': 'margin-bottom: 10px;'},
             ),
         }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        if name:
+            return name.upper()
+        else:
+            return name
