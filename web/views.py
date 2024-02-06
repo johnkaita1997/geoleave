@@ -495,7 +495,7 @@ def apply(request):
                             else:
                                 check_against_days = leave.days_in_advance
                                 print(f"Duration is more than 1 {duration} and check against days is {check_against_days}")
-                            if duration < check_against_days:
+                            if application_days_in_advance < check_against_days:
                                 messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
                                 return redirect('apply')
 
