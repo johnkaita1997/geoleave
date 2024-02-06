@@ -827,7 +827,6 @@ def userLeavesView(request, pk):
             user.met_satisfactory_performance = met_satisfactory_performance
             user.is_fulltime = is_fulltime
             user.is_teamlead = is_teamlead
-            user.hiring_date = hiring_date
 
             user.save()
             messages.success(request, f"User was saved successfully")
