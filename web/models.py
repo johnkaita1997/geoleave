@@ -182,9 +182,9 @@ class EditAppUser(forms.ModelForm):
             'last_name',
             'phone',
             'department',
-            'is_fulltime',
-            'is_teamlead',
-            'is_projectlead',
+            # 'is_fulltime',
+            # 'is_teamlead',
+            # 'is_projectlead',
             'hiring_date',
         ]
 
