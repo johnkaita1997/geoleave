@@ -80,6 +80,8 @@ def getProjectLeadSummaries(user):
     try:
         leave_assigned_days = Leavetype.objects.get(is_normal=True)
         normal_leave_days_available = leave_assigned_days.leave_duration_in_days - consumed_days
+        if normal_leave_days_available < 0:
+            normal_leave_days_available = 0
     except ObjectDoesNotExist:
         leave_assigned_days = 0
         normal_leave_days_available = 0
@@ -192,6 +194,8 @@ def getuserLeaveDetails(user, department=None):
     try:
         leave_assigned_days = Leavetype.objects.get(is_normal=True)
         normal_leave_days_available = leave_assigned_days.leave_duration_in_days - consumed_days
+        if normal_leave_days_available < 0:
+            normal_leave_days_available = 0
     except ObjectDoesNotExist:
         leave_assigned_days = 0
         normal_leave_days_available = 0
@@ -407,9 +411,18 @@ def apply(request):
 
                     normal_leave_days = 0
                     normal_leave_available_days = 0
+
+                    consumed_days = Leaveapplication.objects.filter(
+                        dateofcreation__year=current_year,
+                        is_cleared=True,
+                        appuser=user,
+                        leave__is_normal=True,
+                    ).aggregate(Sum('duration_in_days'))['duration_in_days__sum'] or 0
+
+
                     if not leave.duration_is_request_basis:
                         normal_leave_days = Leavetype.objects.filter(is_normal=True).aggregate(Sum('leave_duration_in_days'))['leave_duration_in_days__sum'] or 0
-                        normal_leave_available_days = normal_leave_days - duration
+                        normal_leave_available_days = normal_leave_days - consumed_days
                         print(f"We got here {normal_leave_available_days}")
 
     
@@ -422,13 +435,6 @@ def apply(request):
 
                     application_days_in_advance = (expected_start_date - current_date).days
     
-                    consumed_days = Leaveapplication.objects.filter(
-                        dateofcreation__year=current_year,
-                        is_cleared=True,
-                        appuser=user,
-                        leave__is_normal=True,
-                    ).aggregate(Sum('duration_in_days'))['duration_in_days__sum'] or 0
-
 
                     is_active_normal_leave = Leaveapplication.objects.filter(
                         dateofcreation__year=current_year,
@@ -510,10 +516,10 @@ def apply(request):
                     if leave.is_normal:
                         if consumed_days >= normal_leave_days:
                             print(f"Consumed days is {consumed_days}")
-                            messages.error(request,f"You have exhausted your normal leave days for this year 1")
+                            messages.error(request,f"You have exhausted your normal leave days for this year")
                             return redirect('apply')
                         if normal_leave_available_days <= 0:
-                            messages.error(request, f"You have exhausted your normal leave days for this year 2 {normal_leave_available_days}")
+                            messages.error(request, f"You have exhausted your normal leave days for this year {normal_leave_available_days}")
                             return redirect('apply')
     
     
