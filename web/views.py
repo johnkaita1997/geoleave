@@ -468,6 +468,7 @@ def apply(request):
                     if leave.has_exhausted_normal_leave_days:
                         if normal_leave_available_days > 0:
                             messages.error(request, f"You must have exhausted your normal leave days. You still have {normal_leave_available_days} days left!")
+                            return redirect('apply')
                         if not user.met_satisfactory_performance:
                             messages.error(request, f"You haven't met satisfactory requirements. Seek guidance from Project  Lead")
                             return redirect('apply')
