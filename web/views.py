@@ -490,8 +490,10 @@ def apply(request):
                         else:
                             print("Normal leave check 1")
                             if duration <= 1:
+                                print(f"Duration is less than 1")
                                 check_against_days = 1
                             else:
+                                print(f"Duration is more than 1 {duration}")
                                 check_against_days = leave.days_in_advance
                             if duration < check_against_days:
                                 messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
