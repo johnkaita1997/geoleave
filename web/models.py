@@ -185,7 +185,7 @@ class EditAppUser(forms.ModelForm):
             # 'is_fulltime',
             # 'is_teamlead',
             # 'is_projectlead',
-            'hiring_date',
+            # 'hiring_date',
         ]
 
         widgets = {
