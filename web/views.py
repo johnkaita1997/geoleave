@@ -237,6 +237,7 @@ def logoutView(request):
 
 @never_cache
 def FileUploadWebView(request):
+    user = checkLogin(request)
     summarydictionary  = {}
     if request.method == 'POST':
         form = FileUploadWeb(data=request.POST, files=request.FILES)
@@ -307,7 +308,6 @@ def loginhomepage(request):
 @never_cache
 def registration(request):
     summarydictionary = {}
-
     if request.method == 'POST':
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
@@ -591,6 +591,7 @@ def apply(request):
 @never_cache
 def deleteLeaveApplicationView(request, pk):
     try:
+        user = checkLogin(request)
         leaveapplication = Leaveapplication.objects.get(id=pk)
         leaveapplication.delete()
         messages.success(request, f"Leave was deleted successfully")
@@ -602,6 +603,7 @@ def deleteLeaveApplicationView(request, pk):
 
 @never_cache
 def applicationsView(request):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getuserLeaveDetails(user, user.department)
     summarydictionary['user'] = user
@@ -611,6 +613,7 @@ def applicationsView(request):
 
 @never_cache
 def approveApplicationView(request, pk):
+    user = checkLogin(request)
     approve_user = request.user
     try:
         leaveapplication = Leaveapplication.objects.get(id=pk)
@@ -655,6 +658,7 @@ def approveApplicationView(request, pk):
 
 @never_cache
 def rejectApplicationView(request, pk):
+    user = checkLogin(request)
     reject_user = request.user
     try:
         leaveapplication = Leaveapplication.objects.get(id=pk)
@@ -699,6 +703,7 @@ def rejectApplicationView(request, pk):
 @never_cache
 def forwardApplicationView(request, pk):
     try:
+        user = checkLogin(request)
         forward_user = request.user
         leaveapplication = Leaveapplication.objects.get(id=pk)
         leaveapplication.is_forwarded = True
@@ -736,6 +741,7 @@ def forwardApplicationView(request, pk):
 @never_cache
 def deleteDepartmentView(request, pk):
     try:
+        user = checkLogin(request)
         department = Department.objects.get(id=pk)
         department.delete()
         messages.success(request, f"Department was deleted successfully")
@@ -750,12 +756,14 @@ def deleteDepartmentView(request, pk):
 
 @never_cache
 def departmentsView(request):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getuserLeaveDetails(user, user.department)
     summarydictionary['user'] = user
 
     department_list = Department.objects.all()
     summarydictionary['department_list'] = department_list
+
 
     if request.method == 'POST':
         form = DepartmentForm(data=request.POST)
@@ -783,6 +791,7 @@ def departmentsView(request):
 
 @never_cache
 def usersView(request):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getuserLeaveDetails(user, user.department)
     summarydictionary['user'] = user
@@ -797,6 +806,7 @@ def usersView(request):
 
 @never_cache
 def userLeavesView(request, pk):
+    user = checkLogin(request)
     try:
         user = AppUser.objects.get(id=pk)
     except ObjectDoesNotExist:
@@ -845,6 +855,7 @@ def userLeavesView(request, pk):
 
 @never_cache
 def editprofileView(request):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getuserLeaveDetails(user)
     summarydictionary['user'] = user
@@ -900,7 +911,7 @@ def editprofileView(request):
 @never_cache
 def documentsView(request, leaveapplicationid):
     try:
-
+        user = checkLogin(request)
         user = request.user
         summarydictionary = getuserLeaveDetails(user)
         summarydictionary['user'] = user
@@ -1014,6 +1025,7 @@ def leavetypesView(request):
 
 @never_cache
 def editleavetypeView(request, leavetypeid):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getuserLeaveDetails(user)
     summarydictionary['user'] = user
@@ -1089,6 +1101,7 @@ def editleavetypeView(request, leavetypeid):
 
 @never_cache
 def deleteleavetypeView(request, leavetypeid):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getuserLeaveDetails(user)
     summarydictionary['user'] = user
@@ -1110,16 +1123,17 @@ def deleteleavetypeView(request, leavetypeid):
 
 @never_cache
 def leaveconfigurationView(request):
-        user = request.user
-        summarydictionary = getuserLeaveDetails(user)
-        summarydictionary['user'] = user
+    user = checkLogin(request)
+    user = request.user
+    summarydictionary = getuserLeaveDetails(user)
+    summarydictionary['user'] = user
 
-        leavetypes = Leavetype.objects.all()
-        summarydictionary['leavetypes'] = leavetypes
+    leavetypes = Leavetype.objects.all()
+    summarydictionary['leavetypes'] = leavetypes
 
-        response = render(request, "leaveconfig.html", {"summary": summarydictionary})
+    response = render(request, "leaveconfig.html", {"summary": summarydictionary})
 
-        return response
+    return response
 
 
 
@@ -1127,6 +1141,7 @@ def leaveconfigurationView(request):
 
 @never_cache
 def clearView(request, leaveapplicationid):
+    user = checkLogin(request)
     summarydictionary = {}
     summarydictionary['user'] = request.user
     if request.method == 'POST':
@@ -1154,10 +1169,10 @@ def clearView(request, leaveapplicationid):
 
 @never_cache
 def clearDateView(request, leaveapplicationid, thetime):
+    user = checkLogin(request)
     user = request.user
 
     try:
-
         thetime = datetime.strptime(thetime, '%Y-%m-%d').date()
 
         leave_application = Leaveapplication.objects.get(id=leaveapplicationid)
@@ -1189,6 +1204,7 @@ def clearDateView(request, leaveapplicationid, thetime):
 
 @never_cache
 def holidayView(request):
+    user = checkLogin(request)
     user = request.user
     summarydictionary = getProjectLeadSummaries(user)
     summarydictionary['user'] = user
