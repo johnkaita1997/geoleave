@@ -482,11 +482,13 @@ def apply(request):
                         print("Start date is today or in the future.")
 
                     if leave.days_in_advance and leave.days_in_advance >= 0:
+                        print("Normal leave check 0")
                         if not leave.is_normal:
                             if application_days_in_advance < leave.days_in_advance:
                                 messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
                                 return redirect('apply')
                         else:
+                            print("Normal leave check 1")
                             if duration <= 1:
                                 check_against_days = 1
                             else:
