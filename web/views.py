@@ -269,7 +269,8 @@ def loginhomepage(request):
     if request.user.is_authenticated:
         print(f"User is authenticated")
         user = request.user
-        if not user or user == None or user.first_name == None:
+        if user and user.id == None:
+            logout(request)
             return redirect('loginpage')
         if user.is_projectlead:
             summarydictionary = getProjectLeadSummaries(user)
