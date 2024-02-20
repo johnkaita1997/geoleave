@@ -267,6 +267,7 @@ def loginhomepage(request):
     summarydictionary = {}
 
     if request.user.is_authenticated:
+        print(f"User is authenticated")
         user = request.user
         if user.is_projectlead:
             summarydictionary = getProjectLeadSummaries(user)
@@ -280,7 +281,7 @@ def loginhomepage(request):
             return render(request, "index.html", {"summary": summarydictionary})
 
     else:
-        print(f"Here 1")
+        print(f"User is not authenticated")
         if request.method == 'POST':
             form = LoginForm(data=request.POST)
             if form.is_valid():
