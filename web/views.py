@@ -269,7 +269,7 @@ def loginhomepage(request):
     if request.user.is_authenticated:
         print(f"User is authenticated")
         user = request.user
-        if not user:
+        if not user or user == None:
             return redirect('loginpage')
         if user.is_projectlead:
             summarydictionary = getProjectLeadSummaries(user)
