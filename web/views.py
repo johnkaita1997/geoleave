@@ -279,7 +279,8 @@ def loginhomepage(request):
             return render(request, "index.html", {"summary": summarydictionary})
         else:
             summarydictionary = getuserLeaveDetails(user)
-            print(f"Getting now")
+            print(f"Getting now {user}")
+            print(f"Getting now {user.first_name}")
             return render(request, "index.html", {"summary": summarydictionary})
 
     else:
