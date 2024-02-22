@@ -427,6 +427,8 @@ def apply(request):
 
                 print(f"aaaaaaaaaaaaaaaaaaaa")
 
+                print(f"user first name is {user}")
+
                 consumed_days = Leaveapplication.objects.filter(
                     dateofcreation__year=current_year,
                     is_cleared=True,
