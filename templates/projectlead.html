@@ -220,14 +220,20 @@ departments.append({
                                                 </td>
 
                                                 <td>
-                                                    {% if leave.is_forwarded %}
-                                                        <div>Forwarded</div>
-                                                    {% elif leave.is_approved %}
-                                                        <div>Approved</div>
-                                                    {% elif not leave.is_approved %}
-                                                        <div>Rejected</div>
+                                                    {% if not value.is_actedon %}
+                                                        <div>PENDING</div>
+                                                    {% elif value.is_cleared %}
+                                                        <div style="color: green">CLEARED</div>
                                                     {% else %}
-                                                        <div>Pending</div>
+                                                        {% if value.is_forwarded %}
+                                                            <div>FORWARDED</div>
+                                                        {% elif value.is_approved %}
+                                                            <div style="color: green">APPROVED</div>
+                                                        {% elif not value.is_approved %}
+                                                            <div style="color: red">REJECTED</div>
+                                                        {% else %}
+                                                            <div>PENDING</div>
+                                                        {% endif %}
                                                     {% endif %}
                                                 </td>
 
