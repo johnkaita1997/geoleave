@@ -394,19 +394,28 @@ def apply(request):
     if request.method == 'POST':
         form = LeaveApplicationForm(data=request.POST, files=request.FILES)
         if form.is_valid():
-            
-            
-            
+
+            print(f"000000000000")
             leave = form.cleaned_data.get('leave')
+            print(f"111111111111")
             duration_in_days = form.cleaned_data.get('duration_in_days')
+            print(f"2222222222222")
             expected_start_date = form.cleaned_data.get('expected_start_date')
+            print(f"33333333333333")
             expected_end_date = form.cleaned_data.get('expected_end_date')
+            print(f"444444444444444")
             start_of_holiday_date = form.cleaned_data.get('start_of_holiday_date')
+            print(f"5555555555555555")
             end_of_holiday_date = form.cleaned_data.get('end_of_holiday_date')
+            print(f"6666666666666666")
             description = form.cleaned_data.get('description').strip()
+            print(f"777777777777777")
 
             files = request.FILES.getlist('accompanying_documents')
+            print(f"888888888888888")
+
             duration =calculate_duration_excluding_weekends_and_holidays(expected_start_date, expected_end_date)
+            print(f"999999999999999")
 
             with transaction.atomic():
 
@@ -416,6 +425,8 @@ def apply(request):
                 normal_leave_days = 0
                 normal_leave_available_days = 0
 
+                print(f"aaaaaaaaaaaaaaaaaaaa")
+
                 consumed_days = Leaveapplication.objects.filter(
                     dateofcreation__year=current_year,
                     is_cleared=True,
@@ -423,22 +434,29 @@ def apply(request):
                     leave__is_normal=True,
                 ).aggregate(Sum('duration_in_days'))['duration_in_days__sum'] or 0
 
+                print(f"bbbbbbbbbbbbbbbbbbb")
 
                 if not leave.duration_is_request_basis:
                     normal_leave_days = Leavetype.objects.filter(is_normal=True).aggregate(Sum('leave_duration_in_days'))['leave_duration_in_days__sum'] or 0
                     normal_leave_available_days = normal_leave_days - consumed_days
                     print(f"We got here {normal_leave_available_days}")
 
+                print(f"cccccccccccccccccccc")
 
                 hiring_date = user.hiring_date
                 difference = relativedelta(current_date, hiring_date)
                 total_months = difference.years * 12 + difference.months
                 length_of_service_in_months = total_months
 
+                print(f"dddddddddddddddddddddd")
+
                 print(f"{hiring_date}, {current_date} {length_of_service_in_months}")
+
+                print(f"eeeeeeeeeeeeeeeeeeeeeee")
 
                 application_days_in_advance = (expected_start_date - current_date).days
 
+                print(f"ffffffffffffffffffffffff")
 
                 is_active_normal_leave = Leaveapplication.objects.filter(
                     dateofcreation__year=current_year,
@@ -446,12 +464,13 @@ def apply(request):
                     appuser=user,
                     leave__is_normal=True,
                 )
-
+                print(f"ggggggggggggggggggggggggggggg")
 
                 if is_active_normal_leave and leave.is_normal:
                     messages.success(request, f"You have an existing Normal Leave Application. It should be acted upon first")
                     return redirect('apply')
 
+                print(f"hhhhhhhhhhhhhhhhhhhhhhhhhh")
 
                 if leave.is_compensatory:
                     if not start_of_holiday_date or not end_of_holiday_date:
@@ -476,6 +495,8 @@ def apply(request):
                     if not user.met_satisfactory_performance:
                         messages.error(request, f"You haven't met satisfactory requirements. Seek guidance from Project  Lead")
                         return redirect('apply')
+
+                print(f"iiiiiiiiiiiiiiiiiiiii")
 
                 if leave.length_of_service_months and leave.length_of_service_months > 0:
                     if length_of_service_in_months < leave.length_of_service_months:
