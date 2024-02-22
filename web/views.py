@@ -575,6 +575,8 @@ def apply(request):
                     projectlead = AppUser.objects.filter(is_projectlead=True).first()
                     if projectlead:
                         projectleademail = projectlead.email
+                    else:
+                        print(f"Project lead email unavailable")
                 except ObjectDoesNotExist:
                     pass
 
