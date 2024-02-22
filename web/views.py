@@ -648,7 +648,7 @@ def approveApplicationView(request, pk):
         applicationuseremail = leaveapplication.appuser.email
 
         subject = f"APPROVAL {applicationuser.first_name} {applicationuser.last_name} -{applicationuser.department.name}  - {leaveapplication.leave.name} Application"
-        message = f"Leave request for between dates {leaveapplication.expected_start_date} and {leaveapplication.expected_end_date} has been rejected by {approve_user.first_name} {approve_user.last_name}."
+        message = f"Leave request for between dates {leaveapplication.expected_start_date} and {leaveapplication.expected_end_date} has been approved by {approve_user.first_name} {approve_user.last_name}."
 
         projectleademail = None
         try:
