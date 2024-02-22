@@ -2,11 +2,13 @@
 {% load crispy_forms_tags %}
 <!DOCTYPE html>
 
- {% if message %}
+{% if messages %}
+    {% for message in messages %}
         <script>
-            alert('{{message}}')
+            alert("{{ message }}")
         </script>
-    {% endif %}
+    {% endfor %}
+{% endif %}
 
 <html lang="en">
 <head>
@@ -53,11 +55,6 @@
 </head>
 <body>
 
- {% if message %}
-        <script>
-            alert('{{message}}')
-        </script>
-    {% endif %}
 
 <div class="bg-light min-vh-100 d-flex flex-row align-items-center">
     <div class="container">
