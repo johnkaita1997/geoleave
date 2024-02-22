@@ -397,198 +397,193 @@ def apply(request):
             
             
             
-            try:
-                leave = form.cleaned_data.get('leave')
-                duration_in_days = form.cleaned_data.get('duration_in_days')
-                expected_start_date = form.cleaned_data.get('expected_start_date')
-                expected_end_date = form.cleaned_data.get('expected_end_date')
-                start_of_holiday_date = form.cleaned_data.get('start_of_holiday_date')
-                end_of_holiday_date = form.cleaned_data.get('end_of_holiday_date')
-                description = form.cleaned_data.get('description').strip()
+            leave = form.cleaned_data.get('leave')
+            duration_in_days = form.cleaned_data.get('duration_in_days')
+            expected_start_date = form.cleaned_data.get('expected_start_date')
+            expected_end_date = form.cleaned_data.get('expected_end_date')
+            start_of_holiday_date = form.cleaned_data.get('start_of_holiday_date')
+            end_of_holiday_date = form.cleaned_data.get('end_of_holiday_date')
+            description = form.cleaned_data.get('description').strip()
 
-                files = request.FILES.getlist('accompanying_documents')
-                duration =calculate_duration_excluding_weekends_and_holidays(expected_start_date, expected_end_date)
+            files = request.FILES.getlist('accompanying_documents')
+            duration =calculate_duration_excluding_weekends_and_holidays(expected_start_date, expected_end_date)
 
-                with transaction.atomic():
-    
-                    current_date = datetime.now().date()
-                    current_year = current_date.year
+            with transaction.atomic():
 
-                    normal_leave_days = 0
-                    normal_leave_available_days = 0
+                current_date = datetime.now().date()
+                current_year = current_date.year
 
-                    consumed_days = Leaveapplication.objects.filter(
-                        dateofcreation__year=current_year,
-                        is_cleared=True,
-                        appuser=user,
-                        leave__is_normal=True,
-                    ).aggregate(Sum('duration_in_days'))['duration_in_days__sum'] or 0
+                normal_leave_days = 0
+                normal_leave_available_days = 0
+
+                consumed_days = Leaveapplication.objects.filter(
+                    dateofcreation__year=current_year,
+                    is_cleared=True,
+                    appuser=user,
+                    leave__is_normal=True,
+                ).aggregate(Sum('duration_in_days'))['duration_in_days__sum'] or 0
 
 
-                    if not leave.duration_is_request_basis:
-                        normal_leave_days = Leavetype.objects.filter(is_normal=True).aggregate(Sum('leave_duration_in_days'))['leave_duration_in_days__sum'] or 0
-                        normal_leave_available_days = normal_leave_days - consumed_days
-                        print(f"We got here {normal_leave_available_days}")
+                if not leave.duration_is_request_basis:
+                    normal_leave_days = Leavetype.objects.filter(is_normal=True).aggregate(Sum('leave_duration_in_days'))['leave_duration_in_days__sum'] or 0
+                    normal_leave_available_days = normal_leave_days - consumed_days
+                    print(f"We got here {normal_leave_available_days}")
 
-    
-                    hiring_date = user.hiring_date
-                    difference = relativedelta(current_date, hiring_date)
-                    total_months = difference.years * 12 + difference.months
-                    length_of_service_in_months = total_months
 
-                    print(f"{hiring_date}, {current_date} {length_of_service_in_months}")
+                hiring_date = user.hiring_date
+                difference = relativedelta(current_date, hiring_date)
+                total_months = difference.years * 12 + difference.months
+                length_of_service_in_months = total_months
 
-                    application_days_in_advance = (expected_start_date - current_date).days
-    
+                print(f"{hiring_date}, {current_date} {length_of_service_in_months}")
 
-                    is_active_normal_leave = Leaveapplication.objects.filter(
-                        dateofcreation__year=current_year,
-                        is_active=True,
-                        appuser=user,
-                        leave__is_normal=True,
-                    )
-    
+                application_days_in_advance = (expected_start_date - current_date).days
 
-                    if is_active_normal_leave and leave.is_normal:
-                        messages.success(request, f"You have an existing Normal Leave Application. It should be acted upon first")
+
+                is_active_normal_leave = Leaveapplication.objects.filter(
+                    dateofcreation__year=current_year,
+                    is_active=True,
+                    appuser=user,
+                    leave__is_normal=True,
+                )
+
+
+                if is_active_normal_leave and leave.is_normal:
+                    messages.success(request, f"You have an existing Normal Leave Application. It should be acted upon first")
+                    return redirect('apply')
+
+
+                if leave.is_compensatory:
+                    if not start_of_holiday_date or not end_of_holiday_date:
+                        messages.error(request, f"Both start and end of holiday dates are required")
                         return redirect('apply')
-    
-
-                    if leave.is_compensatory:
-                        if not start_of_holiday_date or not end_of_holiday_date:
-                            messages.error(request, f"Both start and end of holiday dates are required")
-                            return redirect('apply')
-                    if leave.is_full_time_employee:
-                        if not user.is_fulltime:
-                            messages.error(request, f"You must be a full time employee to apply for this leave")
-                            return redirect('apply')
-                    if leave.is_document_backed:
-                        if not files or len(files) == 0:
-                            messages.error(request, f"The requested leave requires backing documents")
-                            return redirect('apply')
-                    if leave.is_satisfactory_performance_based:
-                        if not user.met_satisfactory_performance:
-                            messages.error(request, f"You haven't met satisfactory requirements. Seek guidance from Project  Lead")
-                            return redirect('apply')
-                    if leave.has_exhausted_normal_leave_days:
-                        if normal_leave_available_days > 0:
-                            messages.error(request, f"You must have exhausted your normal leave days. You still have {normal_leave_available_days} days left!")
-                            return redirect('apply')
-                        if not user.met_satisfactory_performance:
-                            messages.error(request, f"You haven't met satisfactory requirements. Seek guidance from Project  Lead")
-                            return redirect('apply')
-
-                    if leave.length_of_service_months and leave.length_of_service_months > 0:
-                        if length_of_service_in_months < leave.length_of_service_months:
-                            messages.error(request, f"You need to have worked for {leave.length_of_service_months} months to be eligible for this leave")
-                            return redirect('apply')
-
-                    if expected_start_date < current_date:
-                        messages.error(request, "Start day cannot be in the past")
+                if leave.is_full_time_employee:
+                    if not user.is_fulltime:
+                        messages.error(request, f"You must be a full time employee to apply for this leave")
                         return redirect('apply')
+                if leave.is_document_backed:
+                    if not files or len(files) == 0:
+                        messages.error(request, f"The requested leave requires backing documents")
+                        return redirect('apply')
+                if leave.is_satisfactory_performance_based:
+                    if not user.met_satisfactory_performance:
+                        messages.error(request, f"You haven't met satisfactory requirements. Seek guidance from Project  Lead")
+                        return redirect('apply')
+                if leave.has_exhausted_normal_leave_days:
+                    if normal_leave_available_days > 0:
+                        messages.error(request, f"You must have exhausted your normal leave days. You still have {normal_leave_available_days} days left!")
+                        return redirect('apply')
+                    if not user.met_satisfactory_performance:
+                        messages.error(request, f"You haven't met satisfactory requirements. Seek guidance from Project  Lead")
+                        return redirect('apply')
+
+                if leave.length_of_service_months and leave.length_of_service_months > 0:
+                    if length_of_service_in_months < leave.length_of_service_months:
+                        messages.error(request, f"You need to have worked for {leave.length_of_service_months} months to be eligible for this leave")
+                        return redirect('apply')
+
+                if expected_start_date < current_date:
+                    messages.error(request, "Start day cannot be in the past")
+                    return redirect('apply')
+                else:
+                    print("Start date is today or in the future.")
+
+                if expected_end_date < expected_start_date:
+                    messages.error(request, "Leave end date must be after the start date")
+                    return redirect('apply')
+                else:
+                    print("Start date is today or in the future.")
+
+                if leave.days_in_advance and leave.days_in_advance >= 0:
+                    print("Normal leave check 0")
+                    if not leave.is_normal:
+                        if application_days_in_advance < leave.days_in_advance:
+                            messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
+                            return redirect('apply')
                     else:
-                        print("Start date is today or in the future.")
-
-                    if expected_end_date < expected_start_date:
-                        messages.error(request, "Leave end date must be after the start date")
-                        return redirect('apply')
-                    else:
-                        print("Start date is today or in the future.")
-
-                    if leave.days_in_advance and leave.days_in_advance >= 0:
-                        print("Normal leave check 0")
-                        if not leave.is_normal:
-                            if application_days_in_advance < leave.days_in_advance:
-                                messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early")
-                                return redirect('apply')
+                        print("Normal leave check 1")
+                        if duration <= 1:
+                            print(f"Duration is less than 1")
+                            check_against_days = 1
                         else:
-                            print("Normal leave check 1")
-                            if duration <= 1:
-                                print(f"Duration is less than 1")
-                                check_against_days = 1
-                            else:
-                                check_against_days = leave.days_in_advance
-                                print(f"Duration is more than 1 {duration} and check against days is {check_against_days}")
-                            if application_days_in_advance < check_against_days:
-                                messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early. Duration {duration} Start Date {expected_start_date} End Date {expected_end_date}")
-                                return redirect('apply')
-
-
-
-                    if not leave.duration_is_request_basis:
-                        if leave.leave_duration_in_days and leave.leave_duration_in_days >0:
-                            if duration > leave.leave_duration_in_days:
-                                messages.error(request, f"You are only allowed {leave.leave_duration_in_days} days")
-                                return redirect('apply')
-
-                    if leave.is_normal:
-                        if consumed_days >= normal_leave_days:
-                            print(f"Consumed days is {consumed_days}")
-                            messages.error(request,f"You have exhausted your normal leave days for this year")
-                            return redirect('apply')
-                        if normal_leave_available_days <= 0:
-                            messages.error(request, f"You have exhausted your normal leave days for this year {normal_leave_available_days}")
+                            check_against_days = leave.days_in_advance
+                            print(f"Duration is more than 1 {duration} and check against days is {check_against_days}")
+                        if application_days_in_advance < check_against_days:
+                            messages.error(request, f"You are supposed to apply at least {leave.days_in_advance} days early. Your application is {application_days_in_advance} days early. Duration {duration} Start Date {expected_start_date} End Date {expected_end_date}")
                             return redirect('apply')
 
 
 
-                    leave_instance = Leaveapplication.objects.create(
-                        appuser=user,
-                        leave=leave,
-                        description = description,
-                        duration_in_days=duration,
-                        expected_start_date=expected_start_date,
-                        expected_end_date=expected_end_date,
-                        start_of_holiday_date=start_of_holiday_date,
-                        end_of_holiday_date=end_of_holiday_date
+                if not leave.duration_is_request_basis:
+                    if leave.leave_duration_in_days and leave.leave_duration_in_days >0:
+                        if duration > leave.leave_duration_in_days:
+                            messages.error(request, f"You are only allowed {leave.leave_duration_in_days} days")
+                            return redirect('apply')
+
+                if leave.is_normal:
+                    if consumed_days >= normal_leave_days:
+                        print(f"Consumed days is {consumed_days}")
+                        messages.error(request,f"You have exhausted your normal leave days for this year")
+                        return redirect('apply')
+                    if normal_leave_available_days <= 0:
+                        messages.error(request, f"You have exhausted your normal leave days for this year {normal_leave_available_days}")
+                        return redirect('apply')
+
+
+
+                leave_instance = Leaveapplication.objects.create(
+                    appuser=user,
+                    leave=leave,
+                    description = description,
+                    duration_in_days=duration,
+                    expected_start_date=expected_start_date,
+                    expected_end_date=expected_end_date,
+                    start_of_holiday_date=start_of_holiday_date,
+                    end_of_holiday_date=end_of_holiday_date
+                )
+
+                for file in files:
+                    saved_file = SchoolImage.objects.create(
+                        document=file,
+                        creator=request.user,
+                        original_file_name=file.name,
+                        title="Upload",
                     )
-    
-                    for file in files:
-                        saved_file = SchoolImage.objects.create(
-                            document=file,
-                            creator=request.user,
-                            original_file_name=file.name,
-                            title="Upload",
-                        )
-    
-                        Leaveattachment.objects.create(
-                            name="name",
-                            fileid=saved_file,
-                            leave_application=leave_instance
-                        )
 
-                subject = f"{user.first_name} {user.last_name} -{user.department.name} - {duration} Days - {leave.name} Application"
-                message = f"Leave request between {expected_start_date} and {expected_end_date}.\nReason : {description}"
+                    Leaveattachment.objects.create(
+                        name="name",
+                        fileid=saved_file,
+                        leave_application=leave_instance
+                    )
 
-                teamleademail = None
-                projectleademail = None
-                userdepartment = user.department
-                try:
-                    teamlead = AppUser.objects.filter(is_teamlead=True, department=userdepartment).first()
-                    if teamlead:
-                        teamleademail = teamlead.email
-                except ObjectDoesNotExist:
-                    pass
+            subject = f"{user.first_name} {user.last_name} -{user.department.name} - {duration} Days - {leave.name} Application"
+            message = f"Leave request between {expected_start_date} and {expected_end_date}.\nReason : {description}"
 
-                try:
-                    projectlead = AppUser.objects.filter(is_projectlead=True).first()
-                    if projectlead:
-                        projectleademail = projectlead.email
-                except ObjectDoesNotExist:
-                    pass
+            teamleademail = None
+            projectleademail = None
+            userdepartment = user.department
+            try:
+                teamlead = AppUser.objects.filter(is_teamlead=True, department=userdepartment).first()
+                if teamlead:
+                    teamleademail = teamlead.email
+            except ObjectDoesNotExist:
+                pass
 
-                if teamleademail:
-                     sendMail(teamleademail, subject, message)
-                if projectleademail:
-                    sendMail(projectleademail, subject, message)
+            try:
+                projectlead = AppUser.objects.filter(is_projectlead=True).first()
+                if projectlead:
+                    projectleademail = projectlead.email
+            except ObjectDoesNotExist:
+                pass
 
-                messages.success(request, "Application made successfully")
+            if teamleademail:
+                 sendMail(teamleademail, subject, message)
+            if projectleademail:
+                sendMail(projectleademail, subject, message)
 
-                return redirect('loginpage')
+            messages.success(request, "Application made successfully")
 
-            except Exception as exception:
-                messages.success(request, f"{exception}")
-                return redirect(request.META.get('HTTP_REFERER', 'loginpage'))
+            return redirect('loginpage')
 
 
         else:
