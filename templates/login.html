@@ -52,6 +52,13 @@
     <link href="{% static 'assets/coreui/css/examples.css' %}" rel="stylesheet">
 </head>
 <body>
+
+ {% if message %}
+        <script>
+            alert('{{message}}')
+        </script>
+    {% endif %}
+
 <div class="bg-light min-vh-100 d-flex flex-row align-items-center">
     <div class="container">
         <div class="row justify-content-center">
