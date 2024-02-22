@@ -296,6 +296,7 @@ def loginhomepage(request):
                     form = LoginForm()
                     summarydictionary['form'] = form
                     messages.error(request, 'No active user found with the credentials')
+                    return redirect('loginpage')
                 else:
                     login(request, user)
                     return redirect('loginpage')
