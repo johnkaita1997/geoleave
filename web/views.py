@@ -844,11 +844,13 @@ def userLeavesView(request, pk):
             met_satisfactory_performance = form.cleaned_data.get('met_satisfactory_performance')
             is_fulltime = form.cleaned_data.get('is_fulltime')
             is_teamlead = form.cleaned_data.get('is_teamlead')
+            is_projectlead = form.cleaned_data.get('is_projectlead')
             hiring_date = form.cleaned_data.get('hiring_date')
 
             user.met_satisfactory_performance = met_satisfactory_performance
             user.is_fulltime = is_fulltime
             user.is_teamlead = is_teamlead
+            user.is_projectlead = is_projectlead
 
             user.save()
             messages.success(request, f"User was saved successfully")
@@ -865,6 +867,7 @@ def userLeavesView(request, pk):
             'is_fulltime': user.is_fulltime,
             'is_teamlead': user.is_teamlead,
             'hiring_date': user.hiring_date,
+            'is_projectlead': user.is_projectlead,
         })
         summarydictionary['form'] = form
 
@@ -888,11 +891,14 @@ def editprofileView(request):
             last_name = form.cleaned_data.get('last_name').strip()
             phone = form.cleaned_data.get('phone').strip()
             department = form.cleaned_data.get('department')
-            is_fulltime = form.cleaned_data.get('is_fulltime')
             is_teamlead = form.cleaned_data.get('is_teamlead')
             is_projectlead = form.cleaned_data.get('is_projectlead')
 
+            is_fulltime = True
+            if 'is_fulltime' in form.cleaned_data:
+                is_fulltime = form.cleaned_data.get('is_fulltime')
             user.is_fulltime = is_fulltime
+
             user.department = department
             user.first_name = first_name
             user.last_name = last_name

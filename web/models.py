@@ -163,12 +163,14 @@ class AdminEditUserForm(forms.ModelForm):
             'met_satisfactory_performance',
             'is_fulltime',
             'is_teamlead',
+            'is_projectlead',
         ]
 
         widgets = {
             'met_satisfactory_performance': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_fulltime': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_teamlead': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
+            'is_projectlead': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
         }
 
 
@@ -193,7 +195,7 @@ class EditAppUser(forms.ModelForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name', 'style': 'margin-bottom: 10px;'}),
             'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number', 'style': 'margin-bottom: 10px;'}),
             'department': forms.Select(attrs={'class': 'form-select', 'style': 'margin-bottom: 10px;'}),
-            'is_fulltime': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
+            # 'is_fulltime': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_teamlead': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'is_projectlead': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-bottom: 10px;'}),
             'hiring_date': forms.DateInput(
