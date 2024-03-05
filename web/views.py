@@ -903,7 +903,7 @@ def editprofileView(request):
             user.first_name = first_name
             user.last_name = last_name
             # user.is_teamlead = is_teamlead
-            # user.is_projectlead = True
+            user.is_projectlead = True
             user.phone = phone
 
             user.save()
