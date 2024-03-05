@@ -892,7 +892,7 @@ def editprofileView(request):
             phone = form.cleaned_data.get('phone').strip()
             department = form.cleaned_data.get('department')
             is_teamlead = form.cleaned_data.get('is_teamlead')
-            is_projectlead = form.cleaned_data.get('is_projectlead')
+            # is_projectlead = form.cleaned_data.get('is_projectlead')
 
             is_fulltime = True
             if 'is_fulltime' in form.cleaned_data:
@@ -903,7 +903,7 @@ def editprofileView(request):
             user.first_name = first_name
             user.last_name = last_name
             user.is_teamlead = is_teamlead
-            user.is_projectlead = True
+            # user.is_projectlead = True
             user.phone = phone
 
             user.save()
@@ -923,7 +923,7 @@ def editprofileView(request):
             'department': user.department,
             'is_fulltime': user.is_fulltime,
             'is_teamlead': user.is_teamlead,
-            'is_projectlead': user.is_projectlead,
+            # 'is_projectlead': user.is_projectlead,
         })
         summarydictionary['form'] = form
 
