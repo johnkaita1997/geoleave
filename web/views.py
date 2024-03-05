@@ -891,7 +891,7 @@ def editprofileView(request):
             last_name = form.cleaned_data.get('last_name').strip()
             phone = form.cleaned_data.get('phone').strip()
             department = form.cleaned_data.get('department')
-            is_teamlead = form.cleaned_data.get('is_teamlead')
+            # is_teamlead = form.cleaned_data.get('is_teamlead')
             # is_projectlead = form.cleaned_data.get('is_projectlead')
 
             is_fulltime = True
@@ -902,7 +902,7 @@ def editprofileView(request):
             user.department = department
             user.first_name = first_name
             user.last_name = last_name
-            user.is_teamlead = is_teamlead
+            # user.is_teamlead = is_teamlead
             # user.is_projectlead = True
             user.phone = phone
 
